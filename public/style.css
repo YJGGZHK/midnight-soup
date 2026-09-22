@@ -796,7 +796,8 @@ dialog pre {
     font-size:9px;
   }
   .conversation {
-    height:280px;
+    height:60vh;
+    height:60dvh;
   }
   .composer {
     margin-top:auto;
