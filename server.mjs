@@ -37,7 +37,7 @@ export function createApp({
   function view(session) {
     const { puzzle, ...safe } = session;
     delete safe.busy;
-    return { ...safe, puzzleId: puzzle.id, ...(session.ended ? { truth: puzzle.truth, facts: puzzle.facts } : {}) };
+    return { ...safe, puzzleId: puzzle.id, ...(session.ended ? { truth: puzzle.truth, facts: puzzle.facts, source: puzzle.source, adaptation: puzzle.adaptation } : {}) };
   }
   return createServer(async (req, res) => {
     const host = req.headers.host || '';
@@ -107,7 +107,7 @@ export function createApp({
         } else fail(400, '未知操作。');
         return json(view(session));
       }
-      const assets = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
+      const assets = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/catalogue.js': ['catalogue.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
       if (req.method !== 'GET' || !assets[url.pathname]) fail(404, '页面不存在。');
       const [file, type] = assets[url.pathname];
       res.writeHead(200, {

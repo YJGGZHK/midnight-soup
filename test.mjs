@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import { get } from 'node:http';
 import { networkInterfaces } from 'node:os';
+import { filterPuzzles, randomPuzzle } from './public/catalogue.js';
 import { createApp } from './server.mjs';
 import { catalogue, puzzles, judge, evaluationRequest, MODEL } from './game.mjs';
 
@@ -27,14 +28,24 @@ test('海龟汤：保密、Jev 全流程、结果处理、请求与局域网保�
   }
   const list = await request('/api/catalogue');
   assert.equal(list.configured, false);
-  assert.equal(list.puzzles.length, 3);
+  assert.equal(list.puzzles.length, 35);
+  assert.equal(new Set(puzzles.map(p => p.id)).size, puzzles.length);
+  assert.equal(puzzles.filter(p => p.id.startsWith('tb-')).length, 32);
   for (const p of catalogue()) {
     assert.equal(p.truth, undefined);
     assert.equal(p.facts, undefined);
     assert.equal(p.hints, undefined);
+    assert.equal(p.adaptation, undefined);
+    const full = puzzles.find(item => item.id === p.id);
+    assert.equal(full.facts.length, 3);
+    assert.equal(full.hints.length, 3);
+    assert.ok(full.facts.every(Boolean) && full.hints.every(Boolean));
+    assert.ok(p.title && p.teaser && p.genre && p.difficulty && p.source);
+    assert.ok(Array.isArray(p.warnings));
+    assert.ok(!JSON.stringify(p).includes(full.truth));
     assert.equal(typeof p.questions[0], 'string');
   }
-  for (const path of ['/.env', '/game.mjs', '/server.mjs', '/node_modules/ai/package.json']) await request(path, null, 404);
+  for (const path of ['/.env', '/game.mjs', '/server.mjs', '/node_modules/ai/package.json', '/data/turtlebench.json', '/data/originals.json']) await request(path, null, 404);
   assert.equal((await fetch(base)).status, 200);
   await request('/api/session', { puzzleId: 'wrong' }, 400);
   const unconfigured = await request('/api/session', { puzzleId: 'dinner' });
@@ -64,8 +75,8 @@ test('海龟汤：保密、Jev 全流程、结果处理、请求与局域网保�
       assert.equal(s.messages.at(-1).verdict, 'yes');
       assert.equal(s.truth, undefined);
     }
-    assert.equal(s.turns, 9);
-    assert.equal(calls, countBefore + 9, '推荐问题也必须调用模型');
+    assert.equal(s.turns, p.questions.length + 1);
+    assert.equal(calls, countBefore + p.questions.length + 1, '推荐问题也必须调用模型');
     const resumed = await request(`/api/session?id=${id}`);
     assert.deepEqual(resumed.messages, s.messages);
     for (let i = 0; i < 3; i++) {
@@ -77,6 +88,12 @@ test('海龟汤：保密、Jev 全流程、结果处理、请求与局域网保�
     s = await request('/api/action', { id, action: 'reveal' });
     assert.equal(s.truth, p.truth);
     assert.equal(s.solved, false);
+    assert.equal(s.adaptation, p.adaptation);
+    assert.equal(s.source, p.source);
+    const guessing = await request('/api/session', { puzzleId: p.id });
+    const solvedPuzzle = await request('/api/action', { id: guessing.id, action: 'solve', text: p.truth });
+    assert.equal(solvedPuzzle.solved, true);
+    assert.equal(solvedPuzzle.truth, p.truth);
     await request('/api/action', { id, action: 'ask', text: p.questions[0] }, 409);
   }
   key = 'test-key';
@@ -121,4 +138,26 @@ test('海龟汤：保密、Jev 全流程、结果处理、请求与局域网保�
     assert.equal((await fetch(remote + '/api/catalogue', { headers: { Cookie: cookie } })).status, 200);
     assert.equal((await fetch(remote + '/api/catalogue', { headers: { Cookie: 'soup_access=wrong' } })).status, 401);
   }
+});
+
+
+test('选汤：搜索、组合筛选、无结果、随机范围与敏感标签', () => {
+  const list = catalogue();
+  assert.equal(filterPuzzles(list).length, 35);
+  assert.deepEqual(filterPuzzles(list, { query: '  十八楼  ' }).map(p => p.id), ['tb-22']);
+  assert.deepEqual(filterPuzzles(list, { query: '不存在的标题' }), []);
+  const filtered = filterPuzzles(list, { genre: '奇幻', difficulty: '进阶' });
+  assert.equal(filtered.length, 3);
+  assert.ok(filtered.every(p => p.genre === '奇幻' && p.difficulty === '进阶'));
+  const gentle = filterPuzzles(list, { gentle: true });
+  assert.ok(gentle.length > 0 && gentle.every(p => p.warnings.length === 0));
+  assert.ok(!gentle.some(p => p.id === 'tb-01'));
+  assert.deepEqual(filterPuzzles(list, { query: '海龟汤的故事', gentle: true }), []);
+  for (let i = 0; i < 30; i++) {
+    const pick = randomPuzzle(filtered, filtered[0].id);
+    assert.ok(filtered.includes(pick));
+    assert.notEqual(pick.id, filtered[0].id);
+  }
+  assert.equal(randomPuzzle([], 'none'), undefined);
+  assert.equal(randomPuzzle([list[0]], list[0].id), list[0]);
 });

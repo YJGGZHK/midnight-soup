@@ -172,65 +172,6 @@ main {
 .menu-heading span:last-child {
   color:#82927d;
 }
-.puzzle-list {
-  display:flex;
-  gap:0;
-  margin-bottom:24px;
-  border-bottom:1px solid var(--line);
-}
-.puzzle-option {
-  flex:1;
-  min-width:0;
-  position:relative;
-  text-align:left;
-  background:transparent;
-  border:0;
-  border-bottom:2px solid transparent;
-  border-radius:0;
-  padding:15px 17px;
-  display:flex;
-  gap:14px;
-  align-items:center;
-  min-height:78px;
-}
-.puzzle-option+.puzzle-option:before {
-  content:"";
-  position:absolute;
-  left:0;
-  top:20px;
-  bottom:20px;
-  width:1px;
-  background:var(--line);
-}
-.puzzle-option.active {
-  background:#20291f;
-  border-bottom-color:var(--accent);
-}
-.puzzle-number {
-  font:italic 26px/1 Georgia,serif;
-  color:#647565;
-}
-.puzzle-option.active .puzzle-number {
-  color:var(--accent);
-}
-.puzzle-option h3 {
-  font-size:14px;
-  font-weight:500;
-  margin:0 0 3px;
-}
-.puzzle-option p {
-  font-size:10px;
-  margin:0;
-  color:var(--muted);
-  letter-spacing:.5px;
-}
-.puzzle-option .arrow {
-  margin-left:auto;
-  color:#778573;
-}
-.puzzle-option.active .arrow {
-  color:var(--accent);
-}
 .game-grid {
   display:grid;
   grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);
@@ -776,19 +717,6 @@ dialog pre {
     padding-left:17px;
     padding-right:17px;
   }
-  .puzzle-option {
-    padding:12px;
-    gap:10px;
-  }
-  .puzzle-number {
-    font-size:23px;
-  }
-  .puzzle-option h3 {
-    font-size:12px;
-  }
-  .puzzle-option p {
-    font-size:9px;
-  }
 }
 @media(max-width:720px) {
   .header {
@@ -835,33 +763,6 @@ dialog pre {
   .intro h1 {
     font-size:23px;
     letter-spacing:0;
-  }
-  .puzzle-list {
-    gap:7px;
-    margin-bottom:18px;
-  }
-  .puzzle-option {
-    min-height:96px;
-    align-items:flex-start;
-    padding:10px;
-    gap:5px;
-    flex-direction:column;
-  }
-  .puzzle-option h3 {
-    font-size:11px;
-    margin-bottom:4px;
-  }
-  .puzzle-option p {
-    font-size:8px;
-  }
-  .puzzle-number {
-    font-size:18px;
-  }
-  .puzzle-option .arrow {
-    position:absolute;
-    right:10px;
-    top:7px;
-    font-size:12px;
   }
   .game-grid {
     grid-template-columns:1fr;
@@ -968,16 +869,6 @@ dialog pre {
   top:12px;
 }
 @media(max-width:720px) {
-  .puzzle-list {
-    gap:0;
-  }
-  .puzzle-option {
-    min-height:90px;
-  }
-  .puzzle-option+.puzzle-option:before {
-    top:12px;
-    bottom:12px;
-  }
   .suggestion,.actions button {
     min-height:40px;
   }
@@ -993,4 +884,49 @@ dialog pre {
   .header .outline-button,#rules-button {
     min-height:40px;
   }
+}
+
+.selected-case { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:20px 0 24px; }
+.selected-case .eyebrow { font-size:9px; }
+.selected-case h2 { margin:2px 0 5px; font:23px var(--serif); }
+.selected-case p { margin:0; color:var(--muted); font-size:12px; }
+.selected-case button { flex-shrink:0; min-height:42px; }
+.case-warning { margin:16px 30px -8px; color:#845243; font-size:11px; }
+.file-foot { margin-top:auto; }
+.ending .truth-source { font-size:11px; color:#65735a; }
+#library-dialog { width:min(900px,calc(100vw - 32px)); max-height:90dvh; padding:30px; }
+#library-dialog h2 { margin-bottom:10px; font-size:28px; }
+#library-dialog .library-note { font-size:12px; color:var(--muted); }
+.library-filters { display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; margin:18px 0 10px; }
+.library-filters label { display:flex; flex-direction:column; gap:6px; font-size:11px; color:var(--muted); }
+.library-filters input,.library-filters select { width:100%; min-width:0; height:42px; padding:8px 10px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:var(--text); font:12px var(--sans); }
+.library-filters input:focus-visible,.library-filters select:focus-visible,.gentle-filter input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.library-toolbar,.library-summary { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:11px; color:var(--muted); }
+.library-toolbar { margin-bottom:12px; }
+.gentle-filter { display:flex; align-items:center; gap:6px; cursor:pointer; }
+.gentle-filter input { accent-color:var(--accent); width:16px; height:16px; }
+.library-summary { padding:12px 0; border-top:1px solid var(--line); }
+.library-summary button { font-size:11px; }
+.library-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; max-height:44dvh; overflow-y:auto; overscroll-behavior:contain; padding:3px; scrollbar-width:thin; scrollbar-color:var(--line) transparent; }
+.puzzle-option { display:flex; flex-direction:column; align-items:flex-start; gap:8px; min-width:0; padding:16px; text-align:left; background:var(--bg); border:1px solid var(--line); border-radius:5px; }
+.puzzle-option:hover:not(:disabled),.puzzle-option.active { border-color:#9da976; background:#252f22; }
+.puzzle-option h3 { margin:0; font:20px var(--serif); color:var(--text); }
+.puzzle-card-meta { font-size:10px; color:var(--muted); }
+#library-dialog .puzzle-teaser { margin:0; font-size:12px; line-height:1.7; color:#c3ccbb; }
+.puzzle-warnings { font-size:10px; color:#ccba9b; }
+.puzzle-source { margin-top:auto; padding-top:4px; font-size:9px; color:var(--muted); }
+.puzzle-option .arrow { align-self:flex-end; font-size:11px; color:var(--accent); }
+#library-dialog .library-empty { padding:24px 8px; text-align:center; color:var(--muted); }
+#library-dialog .library-attribution { font-size:10px; color:var(--muted); margin-bottom:0; }
+#library-status { color:#efc4b1; }
+@media(max-width:720px) {
+  #library-dialog { padding:22px 18px; max-height:92dvh; }
+  #library-dialog h2 { font-size:22px; padding-right:8px; }
+  .library-filters { grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+  .library-filters .search-field { grid-column:1 / -1; }
+  .library-list { grid-template-columns:1fr; max-height:36dvh; }
+  .selected-case { gap:12px; }
+  .selected-case h2 { font-size:20px; }
+  .selected-case p { font-size:10px; }
+  .case-warning { margin-left:24px; margin-right:24px; }
 }

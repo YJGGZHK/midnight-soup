@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test test.mjs",
-    "check": "node --check server.mjs && node --check game.mjs && node --check public/app.js"
+    "check": "node --check server.mjs && node --check game.mjs && node --check public/app.js && node --check public/catalogue.js"
   },
   "dependencies": {
     "@ai-sdk/gateway": "4.0.88",

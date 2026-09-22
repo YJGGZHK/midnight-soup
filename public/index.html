@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="深夜汤馆：三道海龟汤，单人慢推理。由 Jev 判断你的问题，寻找隐藏的真相。">
+  <meta name="description" content="深夜汤馆：自选海龟汤题库，单人慢推理。由 Jev 判断你的问题，寻找隐藏的真相。">
   <meta name="theme-color" content="#151b19">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' rx='14' fill='%23151b19'/%3E%3Cpath d='M10 29h40c0 21-40 21-40 0zm12-15v8m8-11v11m8-8v8' fill='none' stroke='%23d4de9d' stroke-width='3'/%3E%3C/svg%3E">
   <title>深夜汤馆 · 一碗故事，慢慢推理</title>
@@ -28,12 +28,16 @@
       <div><p class="eyebrow">一碗故事，慢慢推理 / VOL. 01</p><h1>真相，往往在故事的<span>另一面。</span></h1></div>
       <p class="intro-note">听一个离奇的故事。问几个对的问题。<br>今晚，你来揭开谜底。</p>
     </section>
-    <div class="menu-heading"><span>今晚的汤单</span><span>03 道故事 / 任选一碗</span></div>
-    <section id="puzzle-list" class="puzzle-list" aria-label="选择一碗汤"></section>
+    <div class="menu-heading"><span>今晚的汤单</span><span id="total-puzzles">正在读取题库…</span></div>
+    <section class="selected-case" aria-label="当前选择">
+      <div><span class="eyebrow">CURRENT STORY</span><h2 id="selected-puzzle">挑一碗，慢慢来。</h2><p id="selected-description"></p></div>
+      <button id="open-library" class="outline-button">选汤大厅 ↗</button>
+    </section>
     <div class="game-grid" id="game">
       <section class="case-file" aria-labelledby="case-title">
         <div class="file-meta"><span id="case-number">CASE FILE / 001</span><span class="file-stamp">待解密</span></div>
-        <div class="case-heading"><div id="case-tags" class="case-tags"></div><h2 id="case-title">正在开门迎客…</h2></div>
+        <div class="case-heading"><div id="case-tags" class="case-tags"></div><h2 id="case-title" tabindex="-1">正在开门迎客…</h2></div>
+        <p id="case-warning" class="case-warning" hidden></p>
         <p id="surface" class="surface"></p>
         <div class="scene" data-puzzle="dinner" aria-hidden="true">
           <svg class="case-art dinner-art" viewBox="0 0 540 235" fill="none">
@@ -89,7 +93,7 @@
           </svg>
           <span class="scene-caption">ILLUSTRATION / 想象发生在门后的故事</span>
         </div>
-        <div class="file-foot"><span>汤面已经给出，汤底等你发现。</span><span>◆</span></div>
+        <div class="file-foot"><span id="case-source">汤面已经给出，汤底等你发现。</span><span>◆</span></div>
       </section>
       <section class="host-panel" aria-labelledby="host-title">
         <div class="host-header"><div class="host-avatar">汤</div><div><h2 id="host-title">今夜的主持人</h2><p>Jev 评估裁判 · 判断可能出错</p></div><span class="live-label" id="host-status" role="status">等你提问</span></div>
@@ -104,9 +108,25 @@
         </section>
       </section>
     </div>
-    <section id="ending" class="ending" hidden aria-labelledby="ending-title"><p class="eyebrow">THE OTHER SIDE OF THE STORY</p><h2 id="ending-title">真相浮出水面</h2><p id="truth"></p><div class="ending-bottom"><span id="recap"></span><button id="restart" class="primary-button">再来一碗 ↗</button></div></section>
-    <footer><span>没有鬼才逻辑，只有被藏起来的线索。</span><span>3 道汤 · 单人推理 · <span id="connection-footer">尚未配置 Jev Key</span></span></footer>
+    <section id="ending" class="ending" hidden aria-labelledby="ending-title"><p class="eyebrow">THE OTHER SIDE OF THE STORY</p><h2 id="ending-title">真相浮出水面</h2><p id="truth"></p><p id="truth-source" class="truth-source"></p><div class="ending-bottom"><span id="recap"></span><button id="restart" class="primary-button">再来一碗 ↗</button></div></section>
+    <footer><span>没有鬼才逻辑，只有被藏起来的线索。</span><span><span id="footer-count">题库</span> · 单人推理 · <span id="connection-footer">尚未配置 Jev Key</span></span></footer>
   </main>
+  <dialog id="library-dialog" aria-labelledby="library-title">
+    <form method="dialog"><button class="close-dialog" aria-label="关闭选汤大厅">×</button></form>
+    <p class="eyebrow">THE STORY LIBRARY</p><h2 id="library-title">选一碗，你想解开的故事。</h2>
+    <p class="library-note">只看简介，不看答案。含敏感内容的故事已标注，可勾选「无敏感标签」筛选。</p>
+    <div class="library-filters">
+      <label class="search-field">按标题搜索<input id="puzzle-search" type="search" placeholder="试试：电梯、照片、生日" maxlength="80"></label>
+      <label>类型<select id="genre-filter"><option value="">全部类型</option></select></label>
+      <label>难度<select id="difficulty-filter"><option value="">全部难度</option></select></label>
+    </div>
+    <div class="library-toolbar"><label class="gentle-filter"><input id="gentle-filter" type="checkbox">只看无敏感标签</label><button id="clear-filters" class="text-button">重置筛选</button></div>
+    <div class="library-summary"><span id="library-count" role="status"></span><button id="random-puzzle" class="outline-button">从筛选结果随机选 ↗</button></div>
+    <p id="library-empty" class="library-empty" hidden>没有符合条件的故事，换个关键词或重置筛选试试。</p>
+    <section id="puzzle-list" class="library-list" aria-label="选择一碗汤"></section>
+    <p id="library-status" role="alert"></p>
+    <p class="library-attribution">来源：深夜汤馆自带故事（MIT）与 TurtleBench 题库改编（Apache-2.0）。类型、难度与标签由本项目整理，非原数据集评级。</p>
+  </dialog>
   <dialog id="rules-dialog"><form method="dialog"><button class="close-dialog" aria-label="关闭规则">×</button></form><p class="eyebrow">HOW TO PLAY</p><h2>一碗汤，两个故事。</h2><p>你看到的是「汤面」，主持人知道的是「汤底」。通过提问，把隐藏的因果关系找出来。</p><ol><li>每次问一个能用「是 / 不是」回答的问题。</li><li>主持人也可能回答「无关」或「无法确定」。</li><li>卡住了可以要提示，每局最多三个。</li><li>连接 Jev 后，点击「我要破案」提交完整推理。</li></ol><p class="dialog-note">所有提问与破案判断都由 Jev 完成，判断可能出错；提示与汤底以固定故事为准。</p></dialog>
   <dialog id="settings-dialog"><form method="dialog"><button class="close-dialog" aria-label="关闭连接指南">×</button></form><p class="eyebrow">POWERED BY TYPESAFE-AI / JEV</p><h2>让 Jev 来主持。</h2><p>在项目根目录的 <code>.env</code> 中填入 Vercel AI Gateway Key，保存后点击下方按钮，无需重启。</p><pre>AI_GATEWAY_API_KEY=你的Key</pre><p class="dialog-note">Key 仅由服务端读取，不发送给网页。自由问题及隐藏汤底会发送到 Vercel AI Gateway 进行评估。免费期限与实际计费以 Vercel 为准。</p><p class="dialog-note">模型：typesafe-ai/jev<br>接口：AI SDK experimental_evaluate</p><p id="settings-status" role="status"></p><button id="refresh-config" class="primary-button">已配置，刷新连接状态 ↗</button></dialog>
   <dialog id="confirm-dialog"><p class="eyebrow">ONE LAST THING</p><h2 id="confirm-title"></h2><p id="confirm-text"></p><div class="dialog-actions"><button id="confirm-no" class="outline-button">再想想</button><button id="confirm-yes" class="primary-button">确定</button></div></dialog>
