@@ -1,0 +1,28 @@
+{
+  "name": "midnight-soup-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "prepare:web": "node scripts/build-web.mjs",
+    "prebuild": "npm run prepare:web && expo prebuild --platform android",
+    "apk": "npm run prepare:web && cd android && ./gradlew assembleRelease",
+    "test": "node --test test.mjs"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "clone": "2.1.2",
+    "expo": "~57.0.24",
+    "expo-secure-store": "57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "5.7.0",
+    "react-native-webview": "13.16.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

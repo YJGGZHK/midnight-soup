@@ -123,3 +123,15 @@ npm test
 - 固定来源版本、原版权声明及逐题修改说明见 [data/NOTICE.md](data/NOTICE.md)。部分现实人物相关叙述已虚构化，部分污名性用语做了中性改写。
 - 每个导入题目已补充提示、关键事实和标签。2026-09-22 已用真实 Jev 验证《十八楼》的单次提问与完整破案（3/3）；未做全题库真实模型评测，仍可能存在误判或原故事的逻辑局限。
 - 第三方依赖保留各自许可证。项目不附带模型授权、API Key 或服务额度。
+
+## Android 安装包
+
+`mobile/` 是不依赖作者服务器的 Android 壳：题库、进度与判题逻辑在本地，用户在 App 设置里填写自己的 Vercel AI Gateway Key，Key 保存在 Android Keystore。构建：
+
+```bash
+cd mobile
+npm install
+npm run apk
+```
+
+测试包输出在 `mobile/android/app/build/outputs/apk/release/app-release.apk`。联网判题仍需要网络，费用与额度由用户自己的 Vercel 账户承担。

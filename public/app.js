@@ -5,6 +5,7 @@ const storageKey = 'midnight-soup-session-v1';
 function save(id) { try { localStorage.setItem(storageKey, id); } catch { /* 浏览器禁用存储时仍可玩当前局。 */ } }
 function storedId() { try { return localStorage.getItem(storageKey); } catch { return null; } }
 async function api(path, body) {
+  if (window.MidnightSoup) return window.MidnightSoup.request(path, body);
   const response = await fetch(`/api/${path}`, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {});
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || '请求失败，请重试。');
@@ -195,7 +196,7 @@ $('#solve').onclick = () => {
 };
 $('#reveal').onclick = async () => { if (await confirmAction('确定要揭晓汤底吗？', '查看后会结束这一局。要不要再试着问一个问题？')) act('reveal'); };
 $('#rules-button').onclick = () => $('#rules-dialog').showModal();
-$('#settings-button').onclick = () => $('#settings-dialog').showModal();
+$('#settings-button').onclick = () => window.MidnightSoup ? api('settings') : $('#settings-dialog').showModal();
 async function refreshConfig() {
   const data = await api('catalogue');
   catalogue = data.puzzles; configured = data.configured;
@@ -220,7 +221,8 @@ $('#refresh-config').onclick = async () => {
 try {
   await refreshConfig();
   const id = storedId();
-  if (id) {
+  if (window.MidnightSoup) session = await api('resume');
+  else if (id) {
     try { session = await api(`session?id=${encodeURIComponent(id)}`); }
     catch (e) { error(e.message); }
   }
