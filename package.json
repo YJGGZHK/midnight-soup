@@ -1,0 +1,20 @@
+{
+  "name": "midnight-soup",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test test.mjs",
+    "check": "node --check server.mjs && node --check game.mjs && node --check public/app.js"
+  },
+  "dependencies": {
+    "@ai-sdk/gateway": "4.0.88",
+    "ai": "7.0.109"
+  },
+  "description": "深夜汤馆：由 Jev 担任裁判的单人海龟汤 Web 游戏",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.9.0"
+  }
+}
