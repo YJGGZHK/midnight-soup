@@ -212,6 +212,9 @@ async function refreshConfig() {
   $('#connection-footer').textContent = configured ? 'Jev Key 已配置 · 连接待实测' : '尚未配置 Jev Key';
   $('#settings-status').textContent = configured ? '已读取 Key。关闭此窗口即可提问，首个问题将验证真实连接。' : '尚未读取到 Key。请填写 .env 并保存。';
 }
+window.addEventListener('soup-config-changed', async () => {
+  try { await refreshConfig(); if (session) render(); } catch (e) { error(e.message); }
+});
 $('#refresh-config').onclick = async () => {
   const button = $('#refresh-config'); button.disabled = true;
   try { await refreshConfig(); if (session) render(); }
