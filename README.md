@@ -4,7 +4,7 @@
 
 从离奇的「汤面」出发，通过是非问题找出隐藏的因果关系，再提交完整推理。页面采用墨绿与暖纸色的档案风格，支持桌面和手机。
 
-![深夜汤馆界面](docs/screenshot.png)
+![深夜汤馆界面](docs/screenshot.jpg)
 
 ![选汤大厅](docs/library.png)
 
